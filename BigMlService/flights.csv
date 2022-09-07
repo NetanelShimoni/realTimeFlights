@@ -1,0 +1,4 @@
+id,flightNumber,latitude,fit,longitude,originLatitude,originLongitude,destinationLatitude,destinationLongitude,departure,arrival,scheduledArrival,airline,originCountry,destinationCountry,originWeather,destinationWeather,distance,period,month,day,late_arrival
+2d5e1d08,DAL234,32.06,1175,34.93,40.639751,-73.7789,32.011379,34.886662,2022-09-07T00:14:34-04:00,2022-09-07T17:29:26+03:00,2022-09-07T17:35:00+03:00,DL,US,ISR,Haze,Clouds,,regular,9,4,ok
+2d5e1d08,DAL234,32.03,550,34.91,40.639751,-73.7789,32.011379,34.886662,2022-09-07T00:14:34-04:00,2022-09-07T17:29:26+03:00,2022-09-07T17:35:00+03:00,DL,US,ISR,Haze,Clouds,,regular,9,4,ok
+2d5ec801,TVF29WM,32.32,7700,34.61,48.723331,2.379444,32.011379,34.886662,2022-09-07T12:36:09+02:00,2022-09-07T17:36:16+03:00,2022-09-07T17:25:00+03:00,HV,FRA,ISR,Clouds,Clouds,,regular,9,4,ok
