@@ -1,5 +1,3 @@
-node_moudules
 /CloudService/node_modules/
-/FE/Redis/node_modules/
+/BigMlService/node_modules/
 /View/FE/Redis/node_modules/
-/pgadmin-data/
