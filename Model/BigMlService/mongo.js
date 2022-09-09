@@ -4,7 +4,7 @@ const app = express();
 const Flight = require("./models/Flight");
 const cconsumer = require("./consumer");
 const { BigML } = require("bigml");
-const { predictLate_arrival } = require("./Bigml");
+const { predictLate_arrival, createModal } = require("./Bigml");
 const http = require("http");
 const cors = require("cors");
 const { getArrivalFlights } = require("./consumer");
@@ -69,14 +69,17 @@ const createCSVFromMongo = async (arrivalFlights) => {
   await csv.writeRecords(flightsOnGround);
   console.log("predict to ", arrivalFlights?.length);
   //
-  const predictLate_arrivalArray = arrivalFlights?.map((flight) => {
-    return predictLate_arrival(flight);
-  });
-  Promise.all(predictLate_arrivalArray).then((data) => {
-    console.log("data", data);
-  });
+  // const predictLate_arrivalArray = await arrivalFlights?.map(async (flight) => {
+  // return await predictLate_arrival(flight);
+  // const x = await predictLate_arrival(arrivalFlights[0]);
+  await createModal();
+  // console.log("sdsfdsfsdfsdfsdfsdf", x);
+  // });
+  // Promise.all(predictLate_arrivalArray).then((data) => {
+  //   console.log("data", data);
+  // });
 
-  return predictLate_arrivalArray;
+  // return predictLate_arrivalArray;
 };
 
 module.exports = { createCSVFromMongo };

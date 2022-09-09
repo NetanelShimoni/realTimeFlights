@@ -1,5 +1,5 @@
 const { createClient } = require("redis");
-const kafka = require("../../../CloudService/kafkaService");
+const kafka = require("../../Controller/CloudService/kafkaService");
 const client = createClient({ url: "redis://localhost:6379" });
 const initRedis = async () => {
   await client.connect();

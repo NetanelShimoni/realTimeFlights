@@ -5,10 +5,10 @@ import Card from "./Card";
 import { io } from "socket.io-client";
 import { calculateTimeArrival, calculateTimeDeparture } from "./utils/general";
 import axios from "axios";
-// import { createCSVFromMongo } from "../../BigMlService/mongo";
 
 const App = () => {
   const [data, setData] = useState<any>();
+  const [y, setY] = useState<Array<any>>([]);
   const [weather, setWeather] = useState<any>("");
   const cache: { [key: string]: any } = {};
   const socket = io("ws://localhost:4002");
@@ -21,6 +21,9 @@ const App = () => {
   ] = useState<any>([]);
 
   const [isConnected, setIsConnected] = useState(socket.connected);
+  useEffect(() => {
+    setY(data);
+  }, [data]);
 
   useEffect(() => {
     socket.on("connect", () => {
@@ -45,6 +48,7 @@ const App = () => {
     const result = await axios.get("http://localhost:4001/makePredictLate", {
       params: { arrivalsFlight: JSON.stringify(arrivals) },
     });
+    console.log("result", result);
   };
 
   socket.on("weather", (temp) => {
@@ -52,6 +56,7 @@ const App = () => {
   });
 
   socket.on("flights", (flights) => {
+    setY([]);
     setData(flights);
     setArrivals([]);
     setFlightOnGroundToReadyToDeparture([]);
@@ -127,11 +132,11 @@ const App = () => {
         {/*  strokeThickness={5}*/}
         {/*  strokeDashArray={[2, 2]}*/}
         {/*  strokeColor="red"*/}
-        {data?.map((x: any) => {
+        {y?.map((x: any) => {
           return (
-            <Layer animationDuration={500}>
+            <div>
+              {/*<Layer animationDuration={500}>*/}
               <Pushpin
-                key={x?.flightNumber}
                 location={{ latitude: x?.latitude, longitude: x?.longitude }}
                 onClick={() => alert(JSON.stringify(x))}
                 icon={"https://i.imgur.com/AkXmgKU.png"}
@@ -150,7 +155,8 @@ const App = () => {
               {/*  }}*/}
               {/*  pathPointsCount={5}*/}
               {/*/>*/}
-            </Layer>
+              {/*</Layer>*/}
+            </div>
           );
         })}
       </ReactBingMap>
