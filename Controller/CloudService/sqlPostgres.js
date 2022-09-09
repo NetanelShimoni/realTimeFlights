@@ -3,13 +3,13 @@ const client = new Client({
   user: "postgres",
   password: "postgres",
   host: "localhost",
-  port: "5432",
-  database: "ariel",
+  port: "5455",
+  database: "postgres",
 });
 
 const init = async (query) => {
   try {
-    await client.connect(); // gets connection
+    await client.connect();    // gets connection
     await client.query(query); // sends queries
     return true;
   } catch (error) {

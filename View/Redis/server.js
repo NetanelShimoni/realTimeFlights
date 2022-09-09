@@ -10,14 +10,16 @@ app.use(cors());
 const { Server } = require("socket.io");
 const axios = require("axios");
 
+
 const kafka = new Kafka({
   clientId: "my-app",
   brokers: ["localhost:9092"],
 });
 const server = http.createServer(app);
 
+// Socket IO:
 const io = new Server(server, {
-  cors: { origin: "*", methods: ["GET", "POST"] },
+  cors: { origin: "*", methods: ["GET", "POST"] },  // GET & POST availbale for everyone
 });
 
 io.on("connection", (socket) => {
@@ -36,19 +38,8 @@ Redis.initRedis()
     console.log("error connecting", err);
   });
 
-// const deleteFromCacheById = async (typeOfCache, id) => {
-//   try {
-//     // console.log("inside delete from cache");
-//     // if (await client.exists(`Cache:${typeOfCache}`)) {
-//     //   console.log("delete from cache:", typeOfCache);
-//     await client.del(`cache:${typeOfCache}`);
-//     await client.json.del(`cache:${typeOfCache}`, `.${id}`);
-//     // }
-//   } catch (error) {
-//     console.error(error);
-//   }
-// };
 
+// kafka
 const consumer = kafka.consumer({ groupId: "1" });
 
 const subscribeToFlight = async () => {
@@ -58,6 +49,7 @@ const subscribeToFlight = async () => {
     fromBeginning: true,
   });
 
+  // for each msg (filghts array):
   await consumer.run({
     autoCommit: true,
     eachBatch: async (payload) => {
@@ -108,12 +100,13 @@ const getWeather = async () => {
   }
 };
 
+// get flights from Redis every 5 seconds:
 setInterval(async () => {
   const arrivalFlights = await Redis.getArrivalFlightsFromCache();
   const departuresFlights = await Redis.getDeparturesFlightsFromCache();
   const weather = await getWeather();
-  let allFlight = [];
 
+  let allFlight = [];
   Object.entries(arrivalFlights).forEach(([id, flight]) => {
     allFlight.push(flight);
   });
@@ -122,10 +115,13 @@ setInterval(async () => {
     allFlight.push(flight);
   });
   allFlight = allFlight.slice(0, allFlight.length - 2);
+
+  // send to Dashboard on socket IO
   io.emit("flights", allFlight);
   io.emit("weather", weather);
 }, 5000);
 
+// update changes
 setInterval(async () => {
   await Redis.checkAllCache();
 }, 5000);
@@ -136,13 +132,7 @@ app.get("/", (req, res) => {
   res.send("Web Server with redis db is up");
 });
 
-app.get("/getCacheRedis", (req, res) => {
-  // redisDb.get("x", (err, reply) => {
-  //   if (err) throw err;
-  //   console.log(reply);
-  //   res.send(`value=${reply} `);
-  // });
-});
+
 
 server.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);

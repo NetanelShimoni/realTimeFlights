@@ -1,10 +1,13 @@
 const { createClient } = require("redis");
-const kafka = require("../../../CloudService/kafkaService");
+const kafka = require("../../Controller/CloudService/kafkaService");
 const client = createClient({ url: "redis://localhost:6379" });
+
+
 const initRedis = async () => {
   await client.connect();
 };
 
+// add flight to Redis
 const addToCache = async (typeOfCache, id, data) => {
   if (await client.exists(`cache:${typeOfCache}`)) {
     await client.json.set(`cache:${typeOfCache}`, `.${id}`, data);
@@ -15,6 +18,7 @@ const addToCache = async (typeOfCache, id, data) => {
     });
   }
 };
+
 
 const getArrivalFlightsFromCache = async () => {
   try {
@@ -42,12 +46,15 @@ const getDeparturesFlightsFromCache = async () => {
 const checkAllCache = async () => {
   const arrivalsFlight = await getArrivalFlightsFromCache();
   const departuresFlight = await getDeparturesFlightsFromCache();
+
+  // remove flights that already landed (not in Israel) from Redis:
   Object.entries(departuresFlight).map(async ([id, flight]) => {
     if (new Date(flight?.arrival).getTime() <= new Date().getTime()) {
       await client.json.del(`cache:Departures`, `.${id}`);
     }
   });
 
+  // remove flights that already landed from Redis , add it to OnGround 
   Object.entries(arrivalsFlight).map(async ([id, flight]) => {
     if (new Date(flight?.arrival).getTime() <= new Date().getTime()) {
       await client.json.del(`cache:Arrivals`, `.${id}`);

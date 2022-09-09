@@ -4,6 +4,7 @@ const { getWeather, getDistanceFromLatLonInKm } = require("./Functions");
 
 const getFlightParamById = async (id, ft) => {
   try {
+    // flight(id).then(console.log)
     // Bigml.;
     if (id) {
       return flight(id).then(async (data) => {
@@ -48,10 +49,10 @@ const getFlightParamById = async (id, ft) => {
           destinationWeather: destinationWeather[0],
           distance: typeFlight,
           ...period[0],
-          late_arrival: getLateArrival(
+          late_arrival: ft[4]<400 && (ft[12]==="TLV" || ft[12]==="LLBG")? getLateArrival( 
             new Date(data?.arrival).getTime(),
             new Date(data?.scheduledArrival).getTime()
-          ),
+          ): undefined,
         };
       });
     } else {

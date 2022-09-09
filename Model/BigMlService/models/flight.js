@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+
+// define flight scheme
 const flightSchema = new Schema({
   id: {
     type: String,

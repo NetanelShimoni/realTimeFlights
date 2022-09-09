@@ -10,9 +10,10 @@ const connection = new bigml.BigML(BIGML_USERNAME, BIGML_API_KEY);
 const source = new bigml.Source(connection);
 
 // https://bigml.io/andromeda/model?username=hila053;api_key=f581ca2a260830e6dfe31da5be2bdd9a7699f52a
-//
+
 const predictLate_arrival = async (flight) => {
   const result = [];
+
   //create source
   const source = await new bigml.Source(connection);
   return source.create("./flights.csv", (error, sourceInfo) => {

@@ -17,6 +17,11 @@ const kafka = new Kafka({
   brokers: ["localhost:9092"],
 });
 
+
+// ###############################
+// ###########   SQL    ##########
+// ###############################
+
 const text = `
     CREATE TABLE IF NOT EXISTS "API" (
 	    "URL" VARCHAR(300) NOT NULL,
@@ -25,6 +30,8 @@ const text = `
 	    PRIMARY KEY ("DATE")
     );`;
 
+
+// create SQL table:
 sqlPostgres.init(text).then((onSuccess) => {
   if (onSuccess) {
     console.log("Postgres initialized and table created");
@@ -33,16 +40,22 @@ sqlPostgres.init(text).then((onSuccess) => {
   }
 });
 
-const producer = kafka.producer();
-const server = http.createServer(app);
+// const producer = kafka.producer();
+// const server = http.createServer(app);
 
-const io = new Server(server, {
-  cors: { origin: "*", methods: ["GET", "POST"] },
-});
+// const io = new Server(server, {
+//   cors: { origin: "*", methods: ["GET", "POST"] },
+// });
 
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-});
+// app.get("/", (req, res) => {
+//   res.send("Hello World!");
+// });
+
+
+// ###############################
+// #######   Flight data    ######
+// ###############################
+
 
 setInterval(async () => {
   try {
@@ -51,16 +64,18 @@ setInterval(async () => {
     let dataFlights = await axios.get(UrlFlight);
     // dataFlights = Object.entries(dataFlights).slice(2);
     dataFlights = dataFlights.data;
-    delete dataFlights?.full_count;
+    //remove unnaccecery fields:
+    delete dataFlights?.full_count; 
     delete dataFlights?.version;
 
     const flightParams = [];
 
+    //take just flights form/to Israel:
     Object.entries(dataFlights).filter(([id, ft]) => {
       if (
-        ft[12] === "TLV" ||
+        ft[12] === "TLV" ||   // dst
         ft[12] === "LLBG" ||
-        ft[11] === "TLV" ||
+        ft[11] === "TLV" ||   //src
         ft[11] === "LLBG"
       ) {
         // flight(id).then((dataFlights) => console.log(dataFlights));
@@ -72,23 +87,31 @@ setInterval(async () => {
 
     // const allFlights = await Promise.all(flightParams);
     // console.log("############", flightParams.length);
-    let arrivalFlights = [];
-    let onGroundFlights = [];
-    let departureFlights = [];
+
+    // seperate to three types:
+    let arrivalFlights = [];    // on the way to Israel
+    let onGroundFlights = [];   // landed on Israel
+    let departureFlights = [];  //departure from Israel
+
     Promise.all(flightParams).then(async (allFlights) => {
       allFlights.map((flights) => {
         if (flights?.destinationCountry === "ISR") {
           if (new Date(flights.arrival).getTime() <= new Date().getTime()) {
             onGroundFlights.push(flights);
-          } else {
+          } else {  // on the way to Israel
             arrivalFlights.push(flights);
           }
         } else {
           departureFlights.push(flights);
         }
-        // }
       });
 
+
+      // ###############################
+      // ##########   Kafka    #########
+      // ###############################
+
+      // send every 5 seconds onGroundFlights, arrivalFlights, departureFlights - in different topic
       if (onGroundFlights?.length) {
         onGroundFlights = onGroundFlights.filter((flights) => flights.arrival);
         onGroundFlights.push({ isOnGround: true });
@@ -123,8 +146,9 @@ setInterval(async () => {
   } catch (e) {
     console.log("Error: ", e);
   }
-}, 5000);
+}, 5000); 
 
-server.listen(port, async () => {
+
+app.listen(port, async () => {
   console.log(`Example app listening on port ${port}`);
 });

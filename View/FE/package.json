@@ -29,7 +29,7 @@
   },
   "scripts": {
     "start:Dashboard": "react-scripts start",
-    "start:Redis": "nodemon ./Redis/server.js",
+    "start:Redis": "nodemon ../Redis/server.js",
     "redis:run": "docker run -d --name redis-stack -p 6379:6379 -p 8001:8001 redis/redis-stack:latest",
     "build": "react-scripts build",
     "test": "react-scripts test",

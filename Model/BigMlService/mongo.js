@@ -17,6 +17,7 @@ app.listen(4001, () => {
   console.log("Listening on port 4001");
 });
 
+// predict late for req flight
 app.get("/makePredictLate", async (req, res) => {
   // console.log("makePredictLate", req.query.arrivalsFlight);
   const data = JSON.parse(req.query.arrivalsFlight);
@@ -24,6 +25,12 @@ app.get("/makePredictLate", async (req, res) => {
   console.log("resullttt", result);
   // res.send(result);
 });
+
+
+
+// ###############################
+// #########   MongoDB    ########
+// ###############################
 
 mongoose
   .connect("mongodb://127.0.0.1:27017/ariel", { useNewUrlParser: true })
@@ -34,8 +41,15 @@ mongoose
     console.log("Error connecting to MongoDB", e);
   });
 
+
+// ###############################
+// ##########   Kafka    #########
+// ###############################
+
+//Listen to kafka & add flights to mongoDB
 cconsumer.subscribeToFlight().catch(console.error);
 
+//create csv for buildong model
 const createCSVFromMongo = async (arrivalFlights) => {
   const csv = createCSV({
     path: "flights.csv",
@@ -64,11 +78,13 @@ const createCSVFromMongo = async (arrivalFlights) => {
       { id: "late_arrival", title: "late_arrival" },
     ],
   });
+
+  // get all flights from MongoDB
   let flightsOnGround = await Flight.find({});
 
   await csv.writeRecords(flightsOnGround);
   console.log("predict to ", arrivalFlights?.length);
-  //
+  
   const predictLate_arrivalArray = arrivalFlights?.map((flight) => {
     return predictLate_arrival(flight);
   });
