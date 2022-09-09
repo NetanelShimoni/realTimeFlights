@@ -46,10 +46,10 @@ mongoose
 // ##########   Kafka    #########
 // ###############################
 
-//Listen to kafka & add flights to mongoDB
+//Listen to kafka & push flights to mongoDB
 cconsumer.subscribeToFlight().catch(console.error);
 
-//create csv for buildong model
+//define csv (for building model)
 const createCSVFromMongo = async (arrivalFlights) => {
   const csv = createCSV({
     path: "flights.csv",
@@ -83,7 +83,7 @@ const createCSVFromMongo = async (arrivalFlights) => {
   let flightsOnGround = await Flight.find({});
 
   await csv.writeRecords(flightsOnGround);
-  console.log("predict to ", arrivalFlights?.length);
+  console.log("predict to ", arrivalFlights?.length, "flights");
   
   const predictLate_arrivalArray = arrivalFlights?.map((flight) => {
     return predictLate_arrival(flight);

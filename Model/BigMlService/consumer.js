@@ -22,7 +22,7 @@ const subscribeToFlight = async () => {
         for (const message of payload.batch.messages) {
           let ft = JSON.parse(message?.value) ?? [];
           
-          // for each flight 
+          // for each flight x - build Flight
           ft.map(async (x) => {
             if (x?.hasOwnProperty("id") && x?.hasOwnProperty("flightNumber")) {
               const flight = new Flight({
@@ -49,7 +49,7 @@ const subscribeToFlight = async () => {
                 late_arrival: x?.late_arrival,
               });
 
-              // avoid duplicate 
+              //push Flight to mongoDB (avoid duplicate) 
               const result = await Flight.findOne({ id: x.id });
               if (!result) {
                 flight

@@ -10,6 +10,7 @@ interface ICard {
   flights?: any;
 }
 
+// Card component
 const Card = ({ bgColor, text, flights, data }: ICard) => {
   const [openTable, setOpenTable] = useState(false);
 

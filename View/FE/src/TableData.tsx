@@ -30,7 +30,6 @@ const TableData = ({ data, text }: ITableData) => {
         component={Paper}
         sx={{
           position: "relative",
-          // top: "200px",
           overflow: "auto",
         }}
       >

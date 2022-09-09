@@ -56,17 +56,19 @@ sqlPostgres.init(text).then((onSuccess) => {
 // #######   Flight data    ######
 // ###############################
 
-
+// every 5 seconds:
 setInterval(async () => {
   try {
+    // !!! add postMessage
     const UrlFlight =
       "https://data-cloud.flightradar24.com/zones/fcgi/feed.js?faa=1&bounds=41.449%2C21.623%2C16.457%2C53.063&satellite=1&mlat=1&flarm=1&adsb=1&gnd=1&air=1&vehicles=1&estimated=1&maxage=14400&gliders=1&stats=1";
     let dataFlights = await axios.get(UrlFlight);
-    // dataFlights = Object.entries(dataFlights).slice(2);
     dataFlights = dataFlights.data;
     //remove unnaccecery fields:
     delete dataFlights?.full_count; 
     delete dataFlights?.version;
+
+    await sqlPostgres.postMessage(UrlFlight, "flights", new Date())
 
     const flightParams = [];
 
@@ -78,15 +80,13 @@ setInterval(async () => {
         ft[11] === "TLV" ||   //src
         ft[11] === "LLBG"
       ) {
-        // flight(id).then((dataFlights) => console.log(dataFlights));
+        // get rest of the fields and add the flight: 
         flightParams.push(getFlightParamById(id, ft));
         return true;
       }
       return false;
     });
 
-    // const allFlights = await Promise.all(flightParams);
-    // console.log("############", flightParams.length);
 
     // seperate to three types:
     let arrivalFlights = [];    // on the way to Israel
@@ -96,7 +96,7 @@ setInterval(async () => {
     Promise.all(flightParams).then(async (allFlights) => {
       allFlights.map((flights) => {
         if (flights?.destinationCountry === "ISR") {
-          if (new Date(flights.arrival).getTime() <= new Date().getTime()) {
+          if (new Date(flights.arrival).getTime() <= new Date().getTime()) { // lready land in isreal
             onGroundFlights.push(flights);
           } else {  // on the way to Israel
             arrivalFlights.push(flights);
