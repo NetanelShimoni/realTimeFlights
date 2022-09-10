@@ -45,7 +45,7 @@ const App = () => {
     id: "Adad",
   };
   const handleOnClickLearning = async () => {
-    const result = await axios.get("http://localhost:4001/makePredictLate", {
+    const result = await axios.get("http://localhost:4001/createModal", {
       params: { arrivalsFlight: JSON.stringify(arrivals) },
     });
     console.log("result", result);

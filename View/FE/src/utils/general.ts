@@ -17,7 +17,6 @@ export const calculateTimeArrival = (
 
 export const calculateTimeDeparture = (flightTime: any) => {
   let min = 60000 * 15;
-  // console.log(new Date(new Date().getTime() - min), new Date(flightTime));
   const dateAfterSub15Min = new Date(new Date().getTime() + min);
 
   if (

@@ -17,21 +17,15 @@ app.listen(4001, () => {
   console.log("Listening on port 4001");
 });
 
-app.get("/makePredictLate", async (req, res) => {
-  // console.log("makePredictLate", req.query.arrivalsFlight);
-  const data = JSON.parse(req.query.arrivalsFlight);
-  const result = await createCSVFromMongo(data);
-  console.log("resullttt", result);
-  // res.send(result);
+app.get("/createModal", async (req, res) => {
+  await createCSVFromMongo();
+  res.sendStatus(200);
 });
 
 app.get("/getPrediction", async (req, res) => {
-  // console.log("makePredictLate", req.query.arrivalsFlight);
   const data = JSON.parse(req.query.flights);
-  const result = await predictFlights(data);
-
-  console.log("resullttt@@@@@@@@@@@", result);
-  res.send(result);
+  await predictFlights(data);
+  res.sendStatus(200);
 });
 
 mongoose
@@ -76,20 +70,8 @@ const createCSVFromMongo = async (arrivalFlights) => {
   let flightsOnGround = await Flight.find({});
 
   await csv.writeRecords(flightsOnGround);
-  // console.log("predict to ", arrivalFlights?.length);
-  // //
-  // // const predictLate_arrivalArray = await arrivalFlights?.map(async (flight) => {
-  // // return await predictLate_arrival(flight);
-  // // const x = await predictLate_arrival(arrivalFlights[0]);
-  await createModal();
-  // await predictFlights(arrivalFlights);
-  // console.log("sdsfdsfsdfsdfsdfsdf", x);
-  // });
-  // Promise.all(predictLate_arrivalArray).then((data) => {
-  //   console.log("data", data);
-  // });
 
-  // return predictLate_arrivalArray;
+  await createModal();
 };
 
 module.exports = { createCSVFromMongo };

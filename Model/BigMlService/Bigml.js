@@ -74,9 +74,6 @@ const predictFlights = async (flights) => {
             "predicte is",
             predictionInfo.object.output
           );
-          if (predictedFlights.length === flights.length) {
-            // resolve(predictedFlights);
-          }
         });
       });
       fs.writeFileSync(
@@ -89,75 +86,8 @@ const predictFlights = async (flights) => {
           console.log("PredictFlights.json  is saved.");
         }
       );
-      console.log("sadsdsasasasasasasasasasasa", predictedFlights);
     });
   });
-  // .then((predicted) => {
-  //   return cb(predicted, 200);
-  // })
-  // .catch((error: Error) => {
-  //   return cb(error.message, 400);
-  // });
 };
 
-const predictLate_arrival = async (flight) => {
-  const result = [];
-  //create source
-  const source = await new bigml.Source(connection);
-  return source.create("./flights.csv", (error, sourceInfo) => {
-    if (!error && sourceInfo) {
-      //create dataset
-      const dataset = new bigml.Dataset(connection);
-      return dataset.create(sourceInfo.resource, (error, datasetInfo) => {
-        if (!error && datasetInfo) {
-          //create model
-          const model = new bigml.Model(connection);
-          return model.create(
-            datasetInfo.resource,
-            async (error, modelInfo) => {
-              if (!error && modelInfo) {
-                const prediction = await new bigml.Prediction(connection);
-
-                // prediction:
-                return prediction.create(
-                  modelInfo.resource,
-                  flight,
-                  (error, predictionInfo) => {
-                    if (!error && predictionInfo) {
-                      console.log(
-                        "flight is :",
-                        flight.flightNumber,
-                        "pred: ",
-                        predictionInfo.object.output
-                      );
-                      const flightPrediction = {
-                        flightNumber: flight?.flightNumber,
-                        pred: predictionInfo?.object.output,
-                      };
-                      // fs.writeFile(
-                      //   "./predict.json",
-                      //   JSON.stringify(flightPrediction),
-                      //   (err) => {
-                      //     if (err) {postgres
-                      //       throw err;
-                      //     }
-                      //     console.log("JSON data is saved.");
-                      //   }
-                      // );
-                    } else {
-                      console.log("error: unknown prediction", error);
-                    }
-                  }
-                );
-              }
-            }
-          );
-        }
-      });
-    } else {
-      console.log(error);
-    }
-  });
-};
-
-module.exports = { predictLate_arrival, createModal, predictFlights };
+module.exports = { createModal, predictFlights };
