@@ -8,9 +8,10 @@ interface ICard {
   data: any;
   onCLick?: any;
   flights?: any;
+  isArrival?: boolean;
 }
 
-const Card = ({ bgColor, text, flights, data }: ICard) => {
+const Card = ({ bgColor, text, flights, data, isArrival }: ICard) => {
   const [openTable, setOpenTable] = useState(false);
 
   console.log("data is", data);
@@ -18,7 +19,7 @@ const Card = ({ bgColor, text, flights, data }: ICard) => {
   return (
     <div onClick={() => setOpenTable(!openTable)}>
       {openTable && flights?.length > 0 && (
-        <TableData data={flights} text={text} />
+        <TableData data={flights} text={text} isArrival={isArrival} />
       )}
 
       <div

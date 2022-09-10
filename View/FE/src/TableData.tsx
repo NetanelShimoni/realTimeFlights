@@ -13,9 +13,10 @@ import { inspect } from "util";
 interface ITableData {
   data: any;
   text: string;
+  isArrival?: boolean;
 }
 
-const TableData = ({ data, text }: ITableData) => {
+const TableData = ({ data, text, isArrival }: ITableData) => {
   return (
     <div
       style={{
@@ -59,7 +60,15 @@ const TableData = ({ data, text }: ITableData) => {
               </TableCell>
               <TableCell style={{ color: "#fff" }} align="right">
                 Arrival
-              </TableCell>
+              </TableCell>{" "}
+              {isArrival && (
+                <TableCell
+                  style={{ color: "#fff", width: "100%" }}
+                  align="right"
+                >
+                  Is On Time ?
+                </TableCell>
+              )}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -83,7 +92,12 @@ const TableData = ({ data, text }: ITableData) => {
                 <TableCell style={{ color: "#fff" }} align="right">
                   {" "}
                   {flight.arrival}
-                </TableCell>
+                </TableCell>{" "}
+                {isArrival && (
+                  <TableCell style={{ color: "#fff", textAlign: "center" }}>
+                    {flight?.prediction}
+                  </TableCell>
+                )}
               </TableRow>
             ))}
           </TableBody>

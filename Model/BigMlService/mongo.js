@@ -4,7 +4,7 @@ const app = express();
 const Flight = require("./models/Flight");
 const cconsumer = require("./consumer");
 const { BigML } = require("bigml");
-const { predictLate_arrival, createModal } = require("./Bigml");
+const { predictLate_arrival, createModal, predictFlights } = require("./Bigml");
 const http = require("http");
 const cors = require("cors");
 const { getArrivalFlights } = require("./consumer");
@@ -23,6 +23,15 @@ app.get("/makePredictLate", async (req, res) => {
   const result = await createCSVFromMongo(data);
   console.log("resullttt", result);
   // res.send(result);
+});
+
+app.get("/getPrediction", async (req, res) => {
+  // console.log("makePredictLate", req.query.arrivalsFlight);
+  const data = JSON.parse(req.query.flights);
+  const result = await predictFlights(data);
+
+  console.log("resullttt@@@@@@@@@@@", result);
+  res.send(result);
 });
 
 mongoose
@@ -67,12 +76,13 @@ const createCSVFromMongo = async (arrivalFlights) => {
   let flightsOnGround = await Flight.find({});
 
   await csv.writeRecords(flightsOnGround);
-  console.log("predict to ", arrivalFlights?.length);
-  //
-  // const predictLate_arrivalArray = await arrivalFlights?.map(async (flight) => {
-  // return await predictLate_arrival(flight);
-  // const x = await predictLate_arrival(arrivalFlights[0]);
+  // console.log("predict to ", arrivalFlights?.length);
+  // //
+  // // const predictLate_arrivalArray = await arrivalFlights?.map(async (flight) => {
+  // // return await predictLate_arrival(flight);
+  // // const x = await predictLate_arrival(arrivalFlights[0]);
   await createModal();
+  // await predictFlights(arrivalFlights);
   // console.log("sdsfdsfsdfsdfsdfsdf", x);
   // });
   // Promise.all(predictLate_arrivalArray).then((data) => {

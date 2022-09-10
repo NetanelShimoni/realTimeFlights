@@ -22,7 +22,7 @@ const createModal = () => {
                 console.log("hiiiiiiiiiiiiiii", modelInfo.resource);
                 try {
                   fs.writeFile(
-                    "./predict.json",
+                    "./data/predict.json",
                     JSON.stringify(modelInfo.resource),
                     (err) => {
                       if (err) {
@@ -44,6 +44,60 @@ const createModal = () => {
       }
     });
   } catch (e) {}
+};
+let predictedFlights = [];
+
+const predictFlights = async (flights) => {
+  new Promise((resolve, reject) => {
+    const prediction = new bigml.Prediction(connection);
+    let model;
+    fs.readFile("./data/predict.json", "utf8", (err, jsonString) => {
+      if (err) {
+        console.log("File read failed:", err);
+        return;
+      }
+      model = JSON.parse(jsonString);
+      flights?.map(async (flight) => {
+        await prediction.create(model, flight, (error, predictionInfo) => {
+          if (!error && predictionInfo) {
+            predictedFlights = predictedFlights.filter((pred) => {
+              return pred.id !== flight.id;
+            });
+            predictedFlights.push({
+              id: flight.id,
+              prediction: predictionInfo.object.output,
+            });
+          }
+          console.log(
+            "flightNumber",
+            flight?.flightNumber,
+            "predicte is",
+            predictionInfo.object.output
+          );
+          if (predictedFlights.length === flights.length) {
+            // resolve(predictedFlights);
+          }
+        });
+      });
+      fs.writeFileSync(
+        "../../View/Redis/data/predictFlights.json",
+        JSON.stringify(predictedFlights),
+        (err) => {
+          if (err) {
+            throw err;
+          }
+          console.log("PredictFlights.json  is saved.");
+        }
+      );
+      console.log("sadsdsasasasasasasasasasasa", predictedFlights);
+    });
+  });
+  // .then((predicted) => {
+  //   return cb(predicted, 200);
+  // })
+  // .catch((error: Error) => {
+  //   return cb(error.message, 400);
+  // });
 };
 
 const predictLate_arrival = async (flight) => {
@@ -106,4 +160,4 @@ const predictLate_arrival = async (flight) => {
   });
 };
 
-module.exports = { predictLate_arrival, createModal };
+module.exports = { predictLate_arrival, createModal, predictFlights };

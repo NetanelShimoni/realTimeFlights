@@ -97,6 +97,7 @@ const App = () => {
           bgColor={"red"}
           text={"טיסות ממתינות לנחיתה"}
           data={arrivals.length}
+          isArrival={true}
           flights={arrivals}
         />
         <Card
@@ -118,7 +119,7 @@ const App = () => {
             await handleOnClickLearning();
           }}
         >
-          Learning Modal
+          Train Modal
         </button>
       </div>
       <ReactBingMap
@@ -136,12 +137,12 @@ const App = () => {
           return (
             <div>
               {/*<Layer animationDuration={500}>*/}
+              {/*<Polyline*/}
               <Pushpin
                 location={{ latitude: x?.latitude, longitude: x?.longitude }}
                 onClick={() => alert(JSON.stringify(x))}
-                icon={"https://i.imgur.com/AkXmgKU.png"}
+                // icon={"https://i.imgur.com/AkXmgKU.png"}
               />
-              {/*<Polyline*/}
               {/*  strokeThickness={5}*/}
               {/*  strokeDashArray={[2, 2]}*/}
               {/*  strokeColor="red"*/}
